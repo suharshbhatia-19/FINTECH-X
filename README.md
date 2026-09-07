@@ -13,6 +13,10 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Best%20viewed%20on%20desktop%20%E2%80%A2%20On%20mobile%2C%20enable%20Desktop%20Site-red?style=flat-square" alt="Best viewed on desktop. On mobile, enable Desktop Site.">
+</p>
+
+<p align="center">
   <img src="screenshots/dashboard.png" width="950" alt="FINTECH-X Dashboard">
 </p>
 
@@ -20,23 +24,24 @@
 
 ## Why FINTECH-X?
 
-Most financial tools solve **one question at a time**.
+Most personal-finance tools solve **one question at a time**.
 
-FINTECH-X connects your financial life through **one profile and one engine**.
+FINTECH-X connects your financial position through **one profile and one engine**.
 
-| Typical tools | FINTECH-X |
+| Typical Financial Tools | FINTECH-X |
 |---|---|
-| Separate SIP, budget and retirement calculators | One connected financial model |
-| Show individual numbers | Diagnoses the overall financial position |
+| Separate budget, SIP and retirement calculators | One connected financial model |
+| Show individual calculations | Analyzes the complete financial position |
 | Tell you where you stand | Compares **Current vs Optimized** |
-| Generic advice such as “save more” | Quantifies what could change |
-| Assumptions often hidden | Benchmarks and assumptions are clearly labelled |
+| Give generic advice such as “save more” | Quantifies what can potentially change |
+| Treat financial areas separately | Connects spending, investing, goals and retirement |
+| Assumptions may be difficult to identify | Benchmarks and assumptions are clearly labelled |
 
-**One profile powers:**
+**One profile powers the entire system:**
 
 `Cash Flow → Health Score → Spending Analysis → Optimization → SIP → Wealth → Goals → Retirement`
 
-FINTECH-X follows a simple philosophy:
+FINTECH-X follows:
 
 > **INPUT → ANALYSIS → DIAGNOSIS → ACTION**
 
@@ -44,16 +49,17 @@ FINTECH-X follows a simple philosophy:
 
 ## What It Does
 
-- **Financial Health Score** — savings, debt and emergency preparedness
-- **Cash-Flow Analysis** — income, expenses, savings, SIPs and surplus/deficit
-- **Lifestyle Leakage Detection** — identifies potentially recoverable spending
-- **Current vs Optimized Plan** — shows how financial changes affect the bigger picture
-- **SIP & Step-Up SIP Projection** — models long-term wealth scenarios
-- **Goal Planner** — inflation-adjusted goals and required investment
-- **Retirement Analysis** — corpus, required SIP and funding shortfall
-- **Emergency & Insurance Analysis**
-- **80C Tracking**
-- **Transparent Financial Benchmarks**
+- **Financial Health Score** — evaluates savings, debt burden and emergency preparedness
+- **Cash-Flow Analysis** — analyzes income, expenses, savings, SIPs and surplus/deficit
+- **Lifestyle Leakage Detection** — identifies potentially recoverable discretionary spending
+- **Current vs Optimized Plan** — compares the present financial position with an improved scenario
+- **SIP & Step-Up SIP Projection** — models long-term investment outcomes
+- **Goal Planner** — estimates inflation-adjusted goal costs and required investment
+- **Retirement Analysis** — estimates corpus requirements, SIP needs and funding gaps
+- **Emergency Fund Analysis** — measures essential-expense coverage
+- **Insurance Analysis** — compares protection with FINTECH-X planning references
+- **80C Tracking** — tracks eligible amounts without assuming exact tax liability
+- **Transparent Benchmarks** — clearly separates assumptions, references and model rules
 
 ---
 
@@ -63,6 +69,12 @@ FINTECH-X follows a simple philosophy:
 
 <p align="center">
   <img src="screenshots/profile.png" width="900" alt="FINTECH-X Financial Profile">
+</p>
+
+### Dashboard
+
+<p align="center">
+  <img src="screenshots/dashboard.png" width="900" alt="FINTECH-X Dashboard">
 </p>
 
 ### Financial Benchmarks
