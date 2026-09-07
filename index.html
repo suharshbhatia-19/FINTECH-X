@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FINTECH-X — Personal Financial Planning Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #F6F3EC;
+  --surface:  #FFFFFF;
+  --card:     #FFFFFF;
+  --border:   #DCE6D6;
+  --border2:  #A3B49A;
+  --gold:     #0F3D2E;
+  --gold2:    #1E5A42;
+  --gold-dim: rgba(15,61,46,0.10);
+  --gold-glow:rgba(15,61,46,0.05);
+  --teal:     #1E5A42;
+  --teal-dim: rgba(30,90,66,0.10);
+  --red:      #b44949;
+  --red-dim:  rgba(180,73,73,0.10);
+  --amber:    #a87518;
+  --amber-dim:rgba(168,117,24,0.10);
+  --green:    #1E5A42;
+  --green-dim:rgba(30,90,66,0.10);
+  --blue:     #527a6d;
+  --blue-dim: rgba(82,122,109,0.10);
+  --text:     #1A1D1B;
+  --text2:    #55625B;
+  --text3:    #7B877F;
+  --input-bg: #FFFFFF;
+  --input-border:#DCE6D6;
+  --tab-h:    56px;
+  --radius:   10px;
+  --radius-lg:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── NAV ── */
+#nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(246,243,236,0.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 24px;
+  height:var(--tab-h);
+  gap:2px;
+}
+.logo{
+  font-family:'Playfair Display',serif;
+  font-size:17px;color:var(--gold);
+  letter-spacing:0.5px;
+  margin-right:24px;white-space:nowrap;
+}
+.logo span{color:var(--text2);font-size:11px;font-family:'DM Sans',sans-serif;font-weight:400;margin-left:6px;letter-spacing:0}
+.tab-btn{
+  padding:8px 16px;border:none;background:transparent;
+  color:var(--text3);font-size:12px;font-weight:500;
+  letter-spacing:0.3px;cursor:pointer;border-radius:6px;
+  transition:all 0.18s;white-space:nowrap;font-family:'DM Sans',sans-serif;
+  display:flex;align-items:center;gap:6px;
+}
+.tab-btn:hover{color:var(--text);background:var(--border)}
+.tab-btn.active{color:var(--gold);background:var(--gold-dim)}
+.tab-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:0.6}
+
+/* ── PAGES ── */
+.page{display:none;padding:28px 28px 60px;max-width:1280px;margin:0 auto}
+.page.active{display:block}
+
+/* ── PAGE TITLE ── */
+.page-title{
+  display:flex;align-items:baseline;gap:12px;
+  margin-bottom:28px;
+}
+.page-title h1{
+  font-family:'Playfair Display',serif;
+  font-size:22px;color:var(--text);font-weight:600;
+}
+.page-title p{font-size:12px;color:var(--text2)}
+
+/* ── SECTION LABEL ── */
+.sec-label{
+  font-size:10px;font-weight:600;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--gold);
+  padding:0 0 8px;margin:24px 0 12px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.sec-label::before{content:'';display:block;width:3px;height:14px;background:var(--gold);border-radius:2px}
+
+/* ── CARDS ── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px;
+}
+.card-title{
+  font-size:11px;font-weight:600;letter-spacing:0.8px;
+  text-transform:uppercase;color:var(--text2);
+  margin-bottom:16px;display:flex;align-items:center;gap:7px;
+}
+.card-title-icon{font-size:14px}
+
+/* ── GRID LAYOUTS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* ── INPUT FIELDS ── */
+.field{margin-bottom:11px}
+.field label{
+  display:block;font-size:11px;color:var(--text2);
+  margin-bottom:4px;letter-spacing:0.2px;
+}
+.field label span{font-size:10px;color:var(--text3);font-weight:400}
+.field input[type=number]{
+  width:100%;background:var(--input-bg);
+  border:1px solid var(--input-border);
+  border-radius:6px;padding:8px 12px;
+  color:var(--gold2);font-size:13px;font-weight:500;
+  font-family:'DM Mono',monospace;text-align:right;
+  transition:border-color 0.15s,background 0.15s;
+  -moz-appearance:textfield;
+}
+.field input[type=number]::-webkit-outer-spin-button,
+.field input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.field input[type=number]:focus{
+  outline:none;border-color:var(--gold);
+  background:rgba(15,61,46,0.04);
+}
+.field input[type=number]:hover{border-color:var(--border2)}
+.field .hint{font-size:10px;color:var(--text3);margin-top:3px;font-style:italic}
+
+/* ── OUTPUT ROW ── */
+.out-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:7px 12px;border-bottom:1px solid var(--border);
+  transition:background 0.1s;
+}
+.out-row:last-child{border-bottom:none}
+.out-row:hover{background:rgba(15,61,46,0.03)}
+.out-row .lbl{font-size:12px;color:var(--text2);flex:1;padding-right:12px}
+.out-row .val{font-size:13px;font-weight:600;font-family:'DM Mono',monospace;color:var(--text);white-space:nowrap}
+.out-row .val.gold{color:var(--gold2)}
+.out-row .val.teal{color:var(--teal)}
+.out-row .val.red{color:var(--red)}
+.out-row .val.green{color:var(--green)}
+.out-row .val.amber{color:var(--amber)}
+.out-row .val.blue{color:var(--blue)}
+
+/* ── STATUS BADGES ── */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:600;padding:3px 9px;
+  border-radius:20px;white-space:nowrap;
+}
+.badge.ok{background:var(--green-dim);color:var(--green)}
+.badge.warn{background:var(--amber-dim);color:var(--amber)}
+.badge.bad{background:var(--red-dim);color:var(--red)}
+.badge.info{background:var(--blue-dim);color:var(--blue)}
+.badge.gold{background:var(--gold-dim);color:var(--gold2)}
+.badge.neutral{background:rgba(163,180,154,0.20);color:var(--text2)}
+
+/* ── METRIC CARDS ── */
+.metric-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;
+}
+.metric-card .m-label{font-size:10px;color:var(--text3);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px}
+.metric-card .m-val{font-size:22px;font-weight:600;font-family:'DM Mono',monospace;color:var(--text);line-height:1.2}
+.metric-card .m-sub{font-size:11px;color:var(--text2);margin-top:4px}
+.metric-card.gold-border{border-color:rgba(201,168,76,0.3)}
+.metric-card.green-border{border-color:rgba(74,222,128,0.25)}
+.metric-card.red-border{border-color:rgba(248,113,113,0.25)}
+.metric-card.teal-border{border-color:rgba(45,212,191,0.25)}
+
+/* ── SCORE RING ── */
+.score-wrap{display:flex;align-items:center;gap:20px;padding:8px 0}
+.score-ring{position:relative;width:80px;height:80px;flex-shrink:0}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .score-num{
+  position:absolute;inset:0;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-weight:600;font-size:18px;color:var(--gold2);
+}
+.score-ring .score-num small{font-size:9px;color:var(--text3);font-weight:400}
+
+/* ── BUDGET BANNER ── */
+.budget-banner{
+  padding:12px 18px;border-radius:var(--radius);
+  font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:10px;
+  margin:4px 0 12px;
+}
+.budget-banner.ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(74,222,128,0.2)}
+.budget-banner.warn{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(251,191,36,0.2)}
+.budget-banner.bad{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,113,113,0.2)}
+.budget-banner.neutral{background:rgba(136,136,168,0.10);color:var(--text2);border:1px solid var(--border2)}
+
+/* ── LEAKAGE BAR ── */
+.leak-item{padding:8px 0;border-bottom:1px solid var(--border)}
+.leak-item:last-child{border-bottom:none}
+.leak-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.leak-name{font-size:12px;color:var(--text2)}
+.leak-bar-wrap{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.leak-bar{height:100%;border-radius:2px;transition:width 0.4s}
+.leak-bar.ok{background:var(--green)}
+.leak-bar.over{background:var(--red)}
+
+/* ── SCENARIO TABLE ── */
+.scen-table{width:100%;border-collapse:collapse;margin-top:4px}
+.scen-table th{
+  padding:8px 12px;text-align:right;
+  font-size:10px;font-weight:600;letter-spacing:0.5px;
+  color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border);
+}
+.scen-table th:first-child{text-align:left}
+.scen-table td{
+  padding:8px 12px;border-bottom:1px solid var(--border);
+  font-size:12px;text-align:right;font-family:'DM Mono',monospace;
+}
+.scen-table td:first-child{text-align:left;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:11px}
+.scen-table tr:last-child td{border-bottom:none}
+.scen-table .c8{color:var(--blue)}
+.scen-table .c12{color:var(--gold2)}
+.scen-table .c15{color:var(--green)}
+
+/* ── GOAL ROWS ── */
+.goal-row{
+  display:grid;grid-template-columns:1fr 130px 110px 110px 140px 110px;
+  gap:8px;align-items:center;padding:10px 0;
+  border-bottom:1px solid var(--border);
+}
+.goal-row:last-child{border-bottom:none}
+.goal-row input[type=text]{
+  width:100%;background:var(--input-bg);border:1px solid var(--input-border);
+  border-radius:5px;padding:6px 10px;color:var(--text);font-size:12px;
+  font-family:'DM Sans',sans-serif;
+}
+.goal-row input[type=text]:focus{outline:none;border-color:var(--gold)}
+.goal-head{
+  display:grid;grid-template-columns:1fr 130px 110px 110px 140px 110px;
+  gap:8px;padding:6px 0;
+  font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;
+  border-bottom:1px solid var(--border2);margin-bottom:4px;
+}
+@media(max-width:900px){
+  .goal-row,.goal-head{grid-template-columns:1fr 1fr;gap:6px}
+  .goal-row>*,.goal-head>*{padding:2px 0}
+}
+
+/* ── INFLATION TABLE ── */
+.infl-table{width:100%;border-collapse:collapse}
+.infl-table th{
+  padding:7px 12px;text-align:right;
+  font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;
+  border-bottom:1px solid var(--border);font-weight:500;
+}
+.infl-table th:first-child{text-align:left}
+.infl-table td{
+  padding:8px 12px;border-bottom:1px solid var(--border);
+  font-size:12px;font-family:'DM Mono',monospace;text-align:right;
+  color:var(--text);
+}
+.infl-table td:first-child{
+  text-align:left;font-family:'DM Sans',sans-serif;
+  color:var(--gold2);font-weight:600;font-size:13px;
+}
+.infl-table tr:last-child td{border-bottom:none}
+
+/* ── MILESTONE TABLE ── */
+.ms-table{width:100%;border-collapse:collapse}
+.ms-table td{
+  padding:9px 14px;border-bottom:1px solid var(--border);
+  font-size:12px;
+}
+.ms-table td:first-child{color:var(--text2)}
+.ms-table td:nth-child(2){font-family:'DM Mono',monospace;color:var(--teal);font-weight:600;text-align:right}
+.ms-table td:nth-child(3){font-family:'DM Mono',monospace;color:var(--text2);text-align:right}
+.ms-table tr:last-child td{border-bottom:none}
+
+/* ── BENCHMARK TABLE ── */
+.bench-table{width:100%;border-collapse:collapse}
+.bench-table th{
+  padding:8px 14px;text-align:left;
+  font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;
+  border-bottom:1px solid var(--border2);font-weight:500;
+}
+.bench-table td{
+  padding:9px 14px;border-bottom:1px solid var(--border);
+  font-size:12px;
+}
+.bench-table td:first-child{color:var(--text);font-weight:500}
+.bench-table td:nth-child(2){color:var(--gold2);font-family:'DM Mono',monospace;font-weight:600}
+.bench-table td:nth-child(3){color:var(--text3);font-size:11px;font-style:italic}
+.bench-table tr:last-child td{border-bottom:none}
+.bench-table tr:hover td{background:rgba(15,61,46,0.03)}
+
+/* ── NOTE BOX ── */
+.note{
+  background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);
+  border-radius:var(--radius);padding:12px 16px;
+  font-size:11px;color:var(--text2);line-height:1.6;
+  display:flex;gap:10px;align-items:flex-start;
+}
+.note-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.warn-note{
+  background:rgba(248,113,113,0.05);border:1px solid rgba(248,113,113,0.15);
+  border-radius:var(--radius);padding:10px 16px;
+  font-size:11px;color:var(--red);line-height:1.6;
+  display:flex;gap:8px;align-items:flex-start;
+}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:20px 0}
+
+/* ── COMPARISON TABLE (budget) ── */
+.cmp-table{width:100%;border-collapse:collapse}
+.cmp-table th{
+  padding:7px 10px;font-size:10px;color:var(--text3);
+  text-transform:uppercase;letter-spacing:0.5px;font-weight:500;
+  border-bottom:1px solid var(--border);text-align:right;
+}
+.cmp-table th:first-child{text-align:left}
+.cmp-table td{
+  padding:7px 10px;border-bottom:1px solid var(--border);
+  font-size:12px;font-family:'DM Mono',monospace;text-align:right;
+}
+.cmp-table td:first-child{
+  text-align:left;font-family:'DM Sans',sans-serif;
+  color:var(--text2);font-size:11px;
+}
+.cmp-table .savings-pos{color:var(--green)}
+.cmp-table .savings-zero{color:var(--text3)}
+.cmp-table tfoot td{
+  font-weight:600;color:var(--gold2);border-top:1px solid var(--border2);
+  border-bottom:none;
+}
+.cmp-table tfoot td:first-child{color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div id="nav">
+  <div class="logo">FINTECH-X <span>Personal Financial Planning Engine</span></div>
+  <button class="tab-btn active" onclick="showTab('input',this)"><span class="tab-dot"></span>Profile</button>
+  <button class="tab-btn" onclick="showTab('analysis',this)"><span class="tab-dot"></span>Analysis</button>
+  <button class="tab-btn" onclick="showTab('dashboard',this)"><span class="tab-dot"></span>Dashboard</button>
+  <button class="tab-btn" onclick="showTab('goals',this)"><span class="tab-dot"></span>Goal Planner</button>
+  <button class="tab-btn" onclick="showTab('benchmarks',this)"><span class="tab-dot"></span>Benchmarks</button>
+</div>
+
+<!-- ═══════════ INPUT ═══════════ -->
+<div id="page-input" class="page active">
+  <div class="page-title">
+    <h1>Financial Profile</h1>
+    <p>Enter your actual numbers below — every output updates instantly across all tabs.</p>
+  </div>
+
+  <div class="g2">
+    <div>
+      <div class="sec-label">Income</div>
+      <div class="card">
+        <div class="field">
+          <label>Monthly Salary <span>— your take-home, post-tax</span></label>
+          <input type="number" id="i_salary" value="0" min="0" oninput="calc()">
+        </div>
+        <div class="field">
+          <label>Side Income <span>— freelance, rent, dividends, any extra</span></label>
+          <input type="number" id="i_side" value="0" min="0" oninput="calc()">
+        </div>
+        <div class="out-row" style="margin-top:8px;background:var(--gold-glow);border-radius:6px">
+          <div class="lbl" style="color:var(--text);font-weight:500">Total Monthly Income</div>
+          <div class="val gold" id="o_income">₹0</div>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-top:24px">Essential / Committed Expenses</div>
+      <div class="card">
+        <div class="note" style="margin-bottom:14px">
+          <span class="note-icon">📌</span>
+          <span>Essential / committed expenses are priority obligations such as housing, groceries, utilities, debt payments and insurance. Some may vary month to month, but they are treated as non-discretionary in FINTECH-X.</span>
+        </div>
+        <div class="g2">
+          <div class="field">
+            <label>Rent / Housing Cost <span>— rent or housing cost excluding home-loan EMI</span></label>
+            <input type="number" id="i_rent" value="0" min="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Home Loan EMI <span>— monthly housing-loan payment</span></label>
+            <input type="number" id="i_homeemi" value="0" min="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Groceries &amp; Medicines <span>— supermarket + pharmacy</span></label>
+            <input type="number" id="i_groc" value="0" min="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Utilities <span>— electricity, gas, internet, water</span></label>
+            <input type="number" id="i_util" value="0" min="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Other Loan EMI <span>— car loan, personal loan, etc.</span></label>
+            <input type="number" id="i_emi" value="0" min="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Transport <span>— fuel, metro pass, cab subscription</span></label>
+            <input type="number" id="i_trans" value="0" min="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Education <span>— fees, courses, kids' tuition</span></label>
+            <input type="number" id="i_edu" value="0" min="0" oninput="calc()">
+          </div>
+        </div>
+        <div class="field">
+          <label>Insurance Premium <span>— term + health combined monthly premium</span></label>
+          <input type="number" id="i_ins" value="0" min="0" oninput="calc()">
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-top:24px">Lifestyle Expenses</div>
+      <div class="card">
+        <div class="note" style="margin-bottom:14px">
+          <span class="note-icon">💡</span>
+          <span>These are optimized — the engine flags overspending vs your discretionary income. Be honest here; that's where the savings hide.</span>
+        </div>
+        <div class="g2">
+          <div class="field">
+            <label>Food Delivery <span>— Zomato, Swiggy, etc.</span></label>
+            <input type="number" id="i_food" value="0" min="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>OTT Subscriptions <span>— Netflix, Prime, Hotstar…</span></label>
+            <input type="number" id="i_ott" value="0" min="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Shopping <span>— clothes, gadgets, impulse buys</span></label>
+            <input type="number" id="i_shop" value="0" min="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Dining Out <span>— restaurants, cafes, weekend outings</span></label>
+            <input type="number" id="i_dine" value="0" min="0" oninput="calc()">
+          </div>
+        </div>
+        <div class="field">
+          <label>Miscellaneous <span>— gifts, personal care, anything uncategorised</span></label>
+          <input type="number" id="i_oth" value="0" min="0" oninput="calc()">
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-label">Savings, Investments &amp; Protection</div>
+      <div class="card">
+        <div class="field">
+          <label>Monthly Savings <span>— cash set aside in savings account / RD</span></label>
+          <input type="number" id="i_msav" value="0" min="0" oninput="calc()">
+        </div>
+        <div class="field">
+          <label>Monthly SIP / Mutual Fund <span>— equity MF, ELSS, index fund SIP</span></label>
+          <input type="number" id="i_sip" value="0" min="0" oninput="calc()">
+        </div>
+        <div class="field">
+          <label>Emergency Fund Corpus <span>— total amount already saved as emergency buffer</span></label>
+          <input type="number" id="i_emf" value="0" min="0" oninput="calc()">
+          <div class="hint">Target used by FINTECH-X: 6 months of essential / committed expenses</div>
+        </div>
+        <div class="divider"></div>
+        <div class="field">
+          <label>Annual 80C-Eligible Investment <span>— old-regime eligible amount only</span></label>
+          <input type="number" id="i_80c" value="0" min="0" oninput="calc()">
+          <div class="hint">Enter only eligible 80C investments/payments. Do not include an ordinary equity/index SIP unless it is actually eligible.</div>
+        </div>
+        <div class="g2">
+          <div class="field">
+            <label>Current Term Insurance Cover <span>— total life cover</span></label>
+            <input type="number" id="i_termcover" value="0" min="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Current Health Insurance Cover <span>— total health cover</span></label>
+            <input type="number" id="i_healthcover" value="0" min="0" oninput="calc()">
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-top:24px">Smart Assumptions</div>
+      <div class="card">
+        <div class="note" style="margin-bottom:16px">
+          <span class="note-icon">⚙️</span>
+          <span>These are user-adjustable planning assumptions for Version 1. Institution-referenced values and FINTECH-X model assumptions are identified separately on the Benchmarks tab.</span>
+        </div>
+        <div class="field">
+          <label>Expected Return Rate (%) <span>— annual equity MF return you expect</span></label>
+          <input type="number" id="i_ret" value="12" min="0" max="30" step="0.5" oninput="calc()">
+          <div class="hint">12% = user-adjustable long-term equity-return scenario; actual returns are not guaranteed</div>
+        </div>
+        <div class="field">
+          <label>Expected Inflation Rate (%) <span>— CPI inflation to adjust future values</span></label>
+          <input type="number" id="i_inf" value="6" min="0" max="20" step="0.5" oninput="calc()">
+          <div class="hint">6% = conservative user-adjustable inflation assumption used for planning; it is not labelled as an RBI target</div>
+        </div>
+        <div class="field">
+          <label>Investment Horizon (Years) <span>— how long you plan to stay invested</span></label>
+          <input type="number" id="i_hor" value="15" min="1" max="50" oninput="calc()">
+          <div class="hint">Used for all wealth projections on Analysis tab</div>
+        </div>
+        <div class="field">
+          <label>Annual SIP Step-Up (%) <span>— yearly increase in your SIP amount</span></label>
+          <input type="number" id="i_step" value="10" min="0" max="30" step="0.5" oninput="calc()">
+          <div class="hint">10% = user-adjustable annual step-up assumption; the SIP increases once after every 12 months</div>
+        </div>
+        <div class="divider"></div>
+        <div class="g2">
+          <div class="field">
+            <label>Your Current Age <span>— used for retirement calculations</span></label>
+            <input type="number" id="i_age" value="0" min="18" max="80" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>Target Retirement Age <span>— when you want to stop working</span></label>
+            <input type="number" id="i_retage" value="60" min="20" max="80" oninput="calc()">
+          </div>
+        </div>
+        <div class="hint" style="margin-top:-4px">Retirement horizon = Retirement Age − Your Age (auto-computed)</div>
+      </div>
+
+      <div class="sec-label" style="margin-top:24px">Live Snapshot</div>
+      <div class="card">
+        <div class="out-row">
+          <div class="lbl">Total Essential / Committed Expenses</div>
+          <div class="val" id="snap_fixed">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Total Lifestyle Expenses</div>
+          <div class="val" id="snap_life">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Total Expenses</div>
+          <div class="val" id="snap_totexp">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Monthly Surplus / (Deficit)</div>
+          <div class="val" id="snap_surplus">₹0</div>
+        </div>
+        <div style="margin-top:12px" id="snap_banner"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ANALYSIS ═══════════ -->
+<div id="page-analysis" class="page">
+  <div class="page-title">
+    <h1>Financial Diagnosis</h1>
+    <p>Full analysis of your health, leakage, recovery, and wealth trajectory.</p>
+  </div>
+
+  <!-- HEALTH SCORES -->
+  <div class="g4" style="margin-bottom:20px">
+    <div class="metric-card gold-border">
+      <div class="m-label">Health Score</div>
+      <div class="score-wrap">
+        <div class="score-ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="33" fill="none" stroke="#1e1e2e" stroke-width="7"/>
+            <circle id="score-arc" cx="40" cy="40" r="33" fill="none" stroke="#c9a84c" stroke-width="7"
+              stroke-linecap="round" stroke-dasharray="207.3 207.3" stroke-dashoffset="207.3"/>
+          </svg>
+          <div class="score-num"><span id="a_score">0</span><small>/100</small></div>
+        </div>
+        <div>
+          <div id="a_risk" class="badge neutral" style="margin-bottom:6px">—</div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.5">40pts savings · 35pts EMI · 25pts emergency</div>
+        </div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label">Savings Rate</div>
+      <div class="m-val" id="a_savrate">0.0%</div>
+      <div class="m-sub" id="a_savstatus">—</div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label">EMI / Income Ratio</div>
+      <div class="m-val" id="a_emirate">0.0%</div>
+      <div class="m-sub" id="a_emistatus">—</div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label">Emergency Cover</div>
+      <div class="m-val" id="a_emomon">0 mo</div>
+      <div class="m-sub" id="a_emostatus">—</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div>
+      <!-- LEAKAGE -->
+      <div class="sec-label">Spending Leakage Detection</div>
+      <div class="card">
+        <div class="card-title"><span class="card-title-icon">🔍</span>Lifestyle overspend vs discretionary budget</div>
+        <div id="leak_food" class="leak-item"></div>
+        <div id="leak_ott" class="leak-item"></div>
+        <div id="leak_shop" class="leak-item"></div>
+        <div id="leak_dine" class="leak-item"></div>
+        <div id="leak_oth" class="leak-item"></div>
+        <div class="divider"></div>
+        <div class="out-row">
+          <div class="lbl">Total Lifestyle Leakage</div>
+          <div class="val" id="a_totleak">0.0%</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Recoverable Monthly Waste</div>
+          <div class="val green" id="a_waste">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Suggested Extra SIP (50% of waste)</div>
+          <div class="val teal" id="a_xsip">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Suggested Extra Emergency Contribution (30% of waste)</div>
+          <div class="val blue" id="a_xemf">₹0</div>
+        </div>
+      </div>
+
+      <!-- OPTIMIZED BUDGET -->
+      <div class="sec-label" style="margin-top:24px">Optimized Budget</div>
+      <div class="card">
+        <div class="card-title"><span class="card-title-icon">💼</span>Recommended spending caps per category</div>
+        <div id="a_budgbanner" class="budget-banner neutral">Enter profile data to begin cash-flow analysis</div>
+        <table class="cmp-table">
+          <thead>
+            <tr><th>Category</th><th>Current</th><th>Recommended</th><th>Freed Up</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Rent / Housing</td><td id="br_rent_c">₹0</td><td id="br_rent_o">₹0</td><td class="savings-zero" id="br_rent_s">₹0</td></tr>
+            <tr><td>Home Loan EMI</td><td id="br_homeemi_c">₹0</td><td id="br_homeemi_o">₹0</td><td class="savings-zero" id="br_homeemi_s">₹0</td></tr>
+            <tr><td>Groceries</td><td id="br_groc_c">₹0</td><td id="br_groc_o">₹0</td><td class="savings-zero" id="br_groc_s">₹0</td></tr>
+            <tr><td>Utilities</td><td id="br_util_c">₹0</td><td id="br_util_o">₹0</td><td class="savings-zero" id="br_util_s">₹0</td></tr>
+            <tr><td>Other Loan EMI</td><td id="br_emi_c">₹0</td><td id="br_emi_o">₹0</td><td class="savings-zero" id="br_emi_s">₹0</td></tr>
+            <tr><td>Transport</td><td id="br_trans_c">₹0</td><td id="br_trans_o">₹0</td><td class="savings-zero" id="br_trans_s">₹0</td></tr>
+            <tr><td>Education</td><td id="br_edu_c">₹0</td><td id="br_edu_o">₹0</td><td class="savings-zero" id="br_edu_s">₹0</td></tr>
+            <tr><td>Insurance</td><td id="br_ins_c">₹0</td><td id="br_ins_o">₹0</td><td class="savings-zero" id="br_ins_s">₹0</td></tr>
+            <tr><td>Food Delivery</td><td id="br_food_c">₹0</td><td id="br_food_o">₹0</td><td class="savings-pos" id="br_food_s">₹0</td></tr>
+            <tr><td>OTT</td><td id="br_ott_c">₹0</td><td id="br_ott_o">₹0</td><td class="savings-pos" id="br_ott_s">₹0</td></tr>
+            <tr><td>Shopping</td><td id="br_shop_c">₹0</td><td id="br_shop_o">₹0</td><td class="savings-pos" id="br_shop_s">₹0</td></tr>
+            <tr><td>Dining Out</td><td id="br_dine_c">₹0</td><td id="br_dine_o">₹0</td><td class="savings-pos" id="br_dine_s">₹0</td></tr>
+            <tr><td>Miscellaneous</td><td id="br_oth_c">₹0</td><td id="br_oth_o">₹0</td><td class="savings-pos" id="br_oth_s">₹0</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td>TOTAL</td><td id="br_tot_c">₹0</td><td id="br_tot_o">₹0</td><td class="savings-pos" id="br_tot_s">₹0</td></tr>
+          </tfoot>
+        </table>
+        <div class="divider"></div>
+        <div class="out-row">
+          <div class="lbl">Money Freed Up</div>
+          <div class="val green" id="a_freed">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">New Recommended SIP</div>
+          <div class="val gold" id="a_newsip">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">New Emergency Fund Contribution</div>
+          <div class="val blue" id="a_newemf">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">New Savings Buffer (20% of freed money)</div>
+          <div class="val teal" id="a_savbuf">₹0</div>
+        </div>
+      </div>
+
+      <!-- SCORE IMPROVEMENT -->
+      <div class="sec-label" style="margin-top:24px">Realistic Score Improvement</div>
+      <div class="card">
+        <div class="g2">
+          <div class="metric-card">
+            <div class="m-label">Current Score</div>
+            <div class="m-val" id="d_score_c">0</div>
+            <div class="m-sub">Before optimization</div>
+          </div>
+          <div class="metric-card green-border">
+            <div class="m-label">Optimized Score</div>
+            <div class="m-val" id="a_newscore">0</div>
+            <div class="m-sub" id="a_scoreimp">+0 points</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <!-- WEALTH PROJECTION -->
+      <div class="sec-label">Wealth Projections</div>
+      <div class="card">
+        <div class="card-title"><span class="card-title-icon">📈</span>Over your investment horizon</div>
+        <div class="out-row">
+          <div class="lbl">Current Monthly SIP</div>
+          <div class="val gold" id="a_cursip">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Optimized Monthly SIP</div>
+          <div class="val gold" id="a_optsip">₹0</div>
+        </div>
+        <div class="divider"></div>
+        <div class="out-row">
+          <div class="lbl">Wealth — Current Flat SIP (N yrs)</div>
+          <div class="val" id="a_wealthcur">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Wealth — Optimized Flat SIP (N yrs)</div>
+          <div class="val gold" id="a_wealthopt">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Extra Wealth from Optimization</div>
+          <div class="val green" id="a_extraw">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Inflation-Adjusted Wealth (today's ₹)</div>
+          <div class="val amber" id="a_infadj">₹0</div>
+        </div>
+        <div class="divider"></div>
+        <div class="out-row">
+          <div class="lbl">Step-Up SIP Wealth (N yrs, optimized base)</div>
+          <div class="val gold" id="a_stepup">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Extra Wealth from Step-Up vs Flat SIP</div>
+          <div class="val green" id="a_stepextra">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Step-Up Wealth — Inflation Adjusted</div>
+          <div class="val amber" id="a_stepinf">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">First-Year Corpus Milestone (12 mo SIP)</div>
+          <div class="val teal" id="a_1yr">₹0</div>
+        </div>
+      </div>
+
+      <!-- SCENARIO COMPARISON -->
+      <div class="sec-label" style="margin-top:24px">Scenario Comparison</div>
+      <div class="card">
+        <div class="card-title"><span class="card-title-icon">📊</span>Optimized SIP at different return rates</div>
+        <table class="scen-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th class="c8">Conservative 8%</th>
+              <th class="c12">Moderate 12%</th>
+              <th class="c15">Aggressive 15%</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Wealth after N years</td>
+              <td class="c8" id="sc_w8">₹0</td>
+              <td class="c12" id="sc_w12">₹0</td>
+              <td class="c15" id="sc_w15">₹0</td>
+            </tr>
+            <tr>
+              <td>Inflation adjusted</td>
+              <td class="c8" id="sc_i8">₹0</td>
+              <td class="c12" id="sc_i12">₹0</td>
+              <td class="c15" id="sc_i15">₹0</td>
+            </tr>
+            <tr>
+              <td>SIP needed for ₹1 Crore</td>
+              <td class="c8" id="sc_p8">₹0</td>
+              <td class="c12" id="sc_p12">₹0</td>
+              <td class="c15" id="sc_p15">₹0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- EMI REDIRECT -->
+      <div class="sec-label" style="margin-top:24px">EMI Cashflow Redirect</div>
+      <div class="card">
+        <div class="card-title"><span class="card-title-icon">🔄</span>Illustrative effect when loan payments become investable</div>
+        <div class="note" style="margin-bottom:12px">
+          <span class="note-icon">💡</span>
+          <span>This illustration assumes the current EMI amount is available for investment across the displayed horizon. Actual results depend on the real loan-closure date; Version 1 uses this as a what-if scenario, not a prediction.</span>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Current Total EMI / Month</div>
+          <div class="val red" id="a_emi_cur">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">SIP if EMI Redirected (optimized SIP + EMI)</div>
+          <div class="val gold" id="a_emi_redir">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Wealth with EMI-Redirected SIP (N yrs)</div>
+          <div class="val gold" id="a_emi_wlth">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Extra Wealth from EMI Redirect</div>
+          <div class="val green" id="a_emi_extra">₹0</div>
+        </div>
+      </div>
+
+      <!-- TAX -->
+      <div class="sec-label" style="margin-top:24px">80C Deduction Tracker</div>
+      <div class="card">
+        <div class="card-title"><span class="card-title-icon">💰</span>Old-regime Section 80C deduction indicator</div>
+        <div class="warn-note" style="margin-bottom:12px">
+          <span>⚠</span>
+          <span>Version 1 tracks eligible 80C deductions only. It does not estimate tax saved from take-home income because actual tax benefit depends on taxable income, the selected regime, deductions and rebates.</span>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Annual 80C-Eligible Investment Entered</div>
+          <div class="val" id="a_tax_ann">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">80C Eligible Deduction (max ₹1,50,000/yr)</div>
+          <div class="val" id="a_tax_ded">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Tax-Regime Applicability</div>
+          <div class="val" id="a_tax_slab">Old regime only</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Unused 80C Deduction Headroom</div>
+          <div class="val green" id="a_tax_saved">₹1,50,000</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">ELSS Lock-in Period</div>
+          <div class="val">3 years</div>
+        </div>
+      </div>
+
+      <!-- INSURANCE -->
+      <div class="sec-label" style="margin-top:24px">Insurance Adequacy</div>
+      <div class="card">
+        <div class="card-title"><span class="card-title-icon">🛡️</span>Coverage-based protection check</div>
+        <div class="out-row">
+          <div class="lbl">Your Insurance Premium / Month</div>
+          <div class="val" id="a_ins_cur">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Current Term Insurance Cover</div>
+          <div class="val" id="a_ins_termcur">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">FINTECH-X Term-Cover Planning Reference (10× annual income)</div>
+          <div class="val" id="a_ins_term">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Current Health Insurance Cover</div>
+          <div class="val" id="a_ins_healthcur">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Premium as % of Annual Income (informational only)</div>
+          <div class="val" id="a_ins_bench">0.0%</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Term-Cover Status</div>
+          <div id="a_ins_status" class="badge neutral">—</div>
+        </div>
+        <div class="note" style="margin-top:12px">
+          <span class="note-icon">ℹ️</span>
+          <span>Health-cover needs vary by family size, city and medical needs, so Version 1 displays the entered health cover but does not impose a universal minimum.</span>
+        </div>
+      </div>
+
+      <!-- RETIREMENT -->
+      <div class="sec-label" style="margin-top:24px">Retirement Corpus Target</div>
+      <div class="card">
+        <div class="card-title"><span class="card-title-icon">🎯</span>28× planning heuristic, inflation-adjusted</div>
+        <div class="note" style="margin-bottom:12px">
+          <span class="note-icon">ℹ️</span>
+          <span>Version 1 assumption: retirement spending is modelled at 80% of optimized non-EMI spending, and the corpus reference uses 28× annual retirement expense. These are planning assumptions, not universal rules.</span>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Years to Retirement (auto from age inputs)</div>
+          <div class="val gold" id="a_ret_yrs">—</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Est. Monthly Expense Post-Retirement (today's ₹)</div>
+          <div class="val" id="a_ret_exp">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Corpus Needed at Today's Prices — 28× Rule (reference)</div>
+          <div class="val" id="a_ret_corp">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Inflation-Adjusted Corpus Target</div>
+          <div class="val amber" id="a_ret_inflcorp">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">SIP Required to Hit Retirement Corpus</div>
+          <div class="val gold" id="a_ret_sipreq">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Current SIP Shortfall for Retirement</div>
+          <div class="val red" id="a_ret_short">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Retirement Readiness</div>
+          <div id="a_ret_ready" class="badge neutral">—</div>
+        </div>
+      </div>
+
+      <!-- PROJECTED WEALTH INDICATOR -->
+      <div class="sec-label" style="margin-top:24px">Projected Wealth Indicator</div>
+      <div class="card">
+        <div class="card-title"><span class="card-title-icon">📈</span>Planning indicator — not accounting net worth</div>
+        <div class="out-row">
+          <div class="lbl">Current Emergency Corpus</div>
+          <div class="val" id="a_nw_emf">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Projected Flat SIP Corpus (N yrs)</div>
+          <div class="val" id="a_nw_sip">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Projected Step-Up SIP Corpus (N yrs)</div>
+          <div class="val gold" id="a_nw_step">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Projected Wealth / Current Monthly Income</div>
+          <div class="val teal" id="a_nw_ratio">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ DASHBOARD ═══════════ -->
+<div id="page-dashboard" class="page">
+  <div class="page-title">
+    <h1>Dashboard</h1>
+    <p>Your complete financial picture at a glance — all values live from your profile.</p>
+  </div>
+
+  <div id="dash_banner" class="budget-banner neutral" style="margin-bottom:20px">Enter profile data to begin cash-flow analysis</div>
+
+  <div class="g4" style="margin-bottom:20px">
+    <div class="metric-card gold-border">
+      <div class="m-label">Current Health Score</div>
+      <div class="m-val" id="d_score_curr">0</div>
+      <div class="m-sub">out of 100</div>
+    </div>
+    <div class="metric-card green-border">
+      <div class="m-label">Optimized Score</div>
+      <div class="m-val" id="d_score_new">0</div>
+      <div class="m-sub" id="d_score_imp">+0 points</div>
+    </div>
+    <div class="metric-card teal-border">
+      <div class="m-label">Step-Up Wealth (N yrs)</div>
+      <div class="m-val" id="d_stepwealth" style="font-size:16px">₹0</div>
+      <div class="m-sub">Optimized base + step-up</div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label">80C Eligible Deduction</div>
+      <div class="m-val" id="d_taxsaved" style="font-size:16px">₹0</div>
+      <div class="m-sub" id="d_slab">Old regime only</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div>
+      <div class="sec-label">Budget — Current vs Optimized</div>
+      <div class="card">
+        <table class="cmp-table">
+          <thead>
+            <tr><th>Category</th><th>Current</th><th>Optimized</th><th>Saved</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Rent / Housing</td><td id="db_rent_c">₹0</td><td id="db_rent_o">₹0</td><td class="savings-zero" id="db_rent_s">₹0</td></tr>
+            <tr><td>Home Loan EMI</td><td id="db_homeemi_c">₹0</td><td id="db_homeemi_o">₹0</td><td class="savings-zero" id="db_homeemi_s">₹0</td></tr>
+            <tr><td>Groceries</td><td id="db_groc_c">₹0</td><td id="db_groc_o">₹0</td><td class="savings-zero" id="db_groc_s">₹0</td></tr>
+            <tr><td>Utilities</td><td id="db_util_c">₹0</td><td id="db_util_o">₹0</td><td class="savings-zero" id="db_util_s">₹0</td></tr>
+            <tr><td>Other Loan EMI</td><td id="db_emi_c">₹0</td><td id="db_emi_o">₹0</td><td class="savings-zero" id="db_emi_s">₹0</td></tr>
+            <tr><td>Transport</td><td id="db_trans_c">₹0</td><td id="db_trans_o">₹0</td><td class="savings-zero" id="db_trans_s">₹0</td></tr>
+            <tr><td>Education</td><td id="db_edu_c">₹0</td><td id="db_edu_o">₹0</td><td class="savings-zero" id="db_edu_s">₹0</td></tr>
+            <tr><td>Insurance</td><td id="db_ins_c">₹0</td><td id="db_ins_o">₹0</td><td class="savings-zero" id="db_ins_s">₹0</td></tr>
+            <tr><td>Food Delivery</td><td id="db_food_c">₹0</td><td id="db_food_o">₹0</td><td class="savings-pos" id="db_food_s">₹0</td></tr>
+            <tr><td>OTT</td><td id="db_ott_c">₹0</td><td id="db_ott_o">₹0</td><td class="savings-pos" id="db_ott_s">₹0</td></tr>
+            <tr><td>Shopping</td><td id="db_shop_c">₹0</td><td id="db_shop_o">₹0</td><td class="savings-pos" id="db_shop_s">₹0</td></tr>
+            <tr><td>Dining Out</td><td id="db_dine_c">₹0</td><td id="db_dine_o">₹0</td><td class="savings-pos" id="db_dine_s">₹0</td></tr>
+            <tr><td>Miscellaneous</td><td id="db_oth_c">₹0</td><td id="db_oth_o">₹0</td><td class="savings-pos" id="db_oth_s">₹0</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td>TOTAL</td><td id="db_tot_c">₹0</td><td id="db_tot_o">₹0</td><td class="savings-pos" id="db_tot_s">₹0</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-label">Wealth — Flat SIP Projection</div>
+      <div class="card" style="margin-bottom:16px">
+        <table class="cmp-table">
+          <thead>
+            <tr><th>Metric</th><th>Current SIP</th><th>Optimized SIP</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Monthly SIP</td><td id="db_sip_c">₹0</td><td id="db_sip_o">₹0</td></tr>
+            <tr><td>Wealth (N yrs)</td><td id="db_wlth_c">₹0</td><td id="db_wlth_o">₹0</td></tr>
+            <tr><td>Extra Wealth</td><td>—</td><td class="savings-pos" id="db_wlth_x">₹0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sec-label">Retirement &amp; Key Highlights</div>
+      <div class="card">
+        <div class="out-row">
+          <div class="lbl">Retirement Readiness</div>
+          <div id="d_ret_ready" class="badge neutral">—</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">SIP Required for Retirement</div>
+          <div class="val gold" id="d_ret_req">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Retirement SIP Shortfall</div>
+          <div class="val red" id="d_ret_short">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Term-Cover Status</div>
+          <div id="d_ins_st" class="badge neutral">—</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">EMI-to-Income Ratio</div>
+          <div class="val" id="d_emirate">0.0%</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Emergency Cover</div>
+          <div class="val" id="d_emomon">0 mo</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Recoverable Monthly Waste</div>
+          <div class="val green" id="d_waste">₹0</div>
+        </div>
+        <div class="out-row">
+          <div class="lbl">Projected Wealth / Current Monthly Income</div>
+          <div class="val teal" id="d_nw_ratio">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ GOALS ═══════════ -->
+<div id="page-goals" class="page">
+  <div class="page-title">
+    <h1>Goal Planner</h1>
+    <p>Plan your dreams. Know exactly what it takes to reach them.</p>
+  </div>
+
+  <div class="g3" style="margin-bottom:20px">
+    <div class="metric-card gold-border">
+      <div class="m-label">Monthly Surplus Available for Goals</div>
+      <div class="m-val" id="g_surplus">₹0</div>
+      <div class="m-sub">After expenses + SIP + savings</div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label">Total Goals Required / Month</div>
+      <div class="m-val" id="g_tot_req">₹0</div>
+      <div class="m-sub">Sum of all active goal monthly needs</div>
+    </div>
+    <div class="metric-card" id="g_multi_card">
+      <div class="m-label">Multi-Goal Status</div>
+      <div class="m-val" id="g_multi_val" style="font-size:14px">—</div>
+      <div class="m-sub" id="g_combfeas">— Enter goals below</div>
+    </div>
+  </div>
+
+  <div id="goal_deficit_banner" class="budget-banner bad" style="display:none;margin-bottom:16px"></div>
+
+  <div class="note" style="margin-bottom:20px">
+    <span class="note-icon">💡</span>
+    <span>Surplus = Income − Expenses − Monthly SIP − Monthly Savings. This is the cash you have left for goals. Each row below checks one goal independently; the multi-goal section checks them all together.</span>
+  </div>
+
+  <div class="sec-label">Goal Rows — One Goal at a Time Feasibility</div>
+  <div class="card">
+    <div class="goal-head">
+      <div>Goal Name</div>
+      <div style="text-align:right">Target (₹)</div>
+      <div style="text-align:right">Months</div>
+      <div style="text-align:right">Need / Month</div>
+      <div style="text-align:center">Feasibility</div>
+      <div style="text-align:right">Surplus / Shortfall</div>
+    </div>
+    <div id="goal-tbody"></div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px">Multi-Goal Budget Check</div>
+  <div class="card">
+    <div class="out-row">
+      <div class="lbl">Total Required / Month (all active goals)</div>
+      <div class="val" id="g_tot_req2">₹0</div>
+    </div>
+    <div class="out-row">
+      <div class="lbl">Monthly Surplus Available</div>
+      <div class="val" id="g_surp2">₹0</div>
+    </div>
+    <div class="out-row">
+      <div class="lbl">Surplus / Deficit for All Goals Combined</div>
+      <div class="val" id="g_multistat">—</div>
+    </div>
+    <div class="out-row">
+      <div class="lbl">Combined Feasibility</div>
+      <div id="g_combfeas2" class="badge neutral">—</div>
+    </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px">Inflation Reality Check</div>
+  <div class="card">
+    <div class="note" style="margin-bottom:14px">
+      <span class="note-icon">📉</span>
+      <span>What ₹1,00,000 is really worth at your inflation rate. Inflation silently erodes purchasing power — the SIP optimization directly combats this.</span>
+    </div>
+    <table class="infl-table">
+      <thead>
+        <tr><th>Year</th><th>Today's Value</th><th>Real Value Then</th><th>Power Lost</th><th>% Remaining</th><th>Equivalent Today</th></tr>
+      </thead>
+      <tbody id="infl-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px">SIP Compound Milestones</div>
+  <div class="card">
+    <div class="note" style="margin-bottom:14px">
+      <span class="note-icon">🚀</span>
+      <span>How many months to reach each corpus milestone at your optimized SIP and return rate. Updates live as you change inputs.</span>
+    </div>
+    <table class="ms-table" id="ms-table"></table>
+  </div>
+</div>
+
+<!-- ═══════════ BENCHMARKS ═══════════ -->
+<div id="page-benchmarks" class="page">
+  <div class="page-title">
+    <h1>India Financial Benchmarks</h1>
+    <p>FINTECH-X combines institution-referenced values with clearly labelled Version 1 planning assumptions. Static reference card.</p>
+  </div>
+  <div class="card">
+    <table class="bench-table">
+      <thead>
+        <tr><th>Metric</th><th>Benchmark</th><th>Source / Note</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Equity return scenario</td><td>10–14% p.a.</td><td>FINTECH-X scenario range; user-adjustable and not guaranteed</td></tr>
+        <tr><td>Inflation assumption</td><td>6% default</td><td>FINTECH-X planning assumption; user-adjustable and not labelled as an RBI target</td></tr>
+        <tr><td>Retirement withdrawal reference</td><td>3.5–4% heuristic</td><td>Planning heuristic; not a universal safe rate</td></tr>
+        <tr><td>Emergency fund target</td><td>6 months essential expenses</td><td>FINTECH-X planning benchmark</td></tr>
+        <tr><td>EMI-to-income ratio — safe zone</td><td>&lt; 35%</td><td>FINTECH-X risk benchmark</td></tr>
+        <tr><td>Insurance premium</td><td>Informational only</td><td>Premium is not used to judge coverage adequacy</td></tr>
+        <tr><td>Term-cover planning reference</td><td>10× annual income</td><td>FINTECH-X planning heuristic</td></tr>
+        <tr><td>Health-cover minimum</td><td>User-specific</td><td>No universal minimum imposed in Version 1</td></tr>
+        <tr><td>Savings rate — healthy</td><td>≥ 20% of income</td><td>FINTECH-X Health Score benchmark</td></tr>
+        <tr><td>Food delivery spend — safe</td><td>≤ 10% of discretionary income</td><td>FINTECH-X benchmark</td></tr>
+        <tr><td>OTT spend — safe</td><td>≤ 2% of discretionary income</td><td>FINTECH-X benchmark</td></tr>
+        <tr><td>Shopping spend — safe</td><td>≤ 15% of discretionary income</td><td>FINTECH-X benchmark</td></tr>
+        <tr><td>Dining out — safe</td><td>≤ 10% of discretionary income</td><td>FINTECH-X benchmark</td></tr>
+        <tr><td>Miscellaneous — safe</td><td>≤ 10% of discretionary income</td><td>FINTECH-X benchmark</td></tr>
+        <tr><td>SIP step-up scenario</td><td>10% annually</td><td>User-adjustable FINTECH-X assumption; applied as an exact annual step-up</td></tr>
+        <tr><td>80C aggregate eligible deduction limit</td><td>₹1,50,000 / year</td><td>Income Tax Department — old-regime eligible payments/investments</td></tr>
+        <tr><td>ELSS lock-in period</td><td>3 years</td><td>Reference only; verify current scheme rules before financial use</td></tr>
+        <tr><td>PPF interest rate</td><td>Not used by engine</td><td>Rates change periodically; verify the current notified rate before use</td></tr>
+        <tr><td>28× retirement corpus reference</td><td>28 × annual expenses at retirement</td><td>FINTECH-X planning heuristic; approximately a 3.6% starting-withdrawal reference</td></tr>
+        <tr><td>Debt-to-income reference</td><td>&lt; 40%</td><td>FINTECH-X reference benchmark</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// FINTECH-X V1 PUBLIC FRONTEND
+// This file contains only interface and API communication logic.
+// All FINTECH-X calculations, thresholds and financial rules are in the private backend.
+
+// LOCAL TEST URL:
+let API_URL = 'http://127.0.0.1:8000';
+// AFTER DEPLOYING THE BACKEND, replace the line above with your Render URL, for example:
+// let API_URL = 'https://your-fintechx-backend.onrender.com';
+
+function val(id){
+  const e = document.getElementById(id);
+  return e ? (parseFloat(e.value) || 0) : 0;
+}
+
+function set(id, value){
+  const e = document.getElementById(id);
+  if(e) e.innerHTML = value;
+}
+
+function setClass(id, className){
+  const e = document.getElementById(id);
+  if(e) e.className = className;
+}
+
+function showTab(name, btn){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+const goalDefaults = [
+  'Buy Laptop / Phone',
+  'Trip / Vacation',
+  'Emergency Buffer Goal',
+  'New Gadget / Course',
+  'Custom Goal'
+];
+
+function buildGoalRows(){
+  const tbody = document.getElementById('goal-tbody');
+  tbody.innerHTML = '';
+  for(let i = 0; i < 5; i++){
+    const row = document.createElement('div');
+    row.className = 'goal-row';
+    row.innerHTML =
+      '<div><input type="text" id="gn_' + i + '" value="' + goalDefaults[i] + '" oninput="calc()"></div>' +
+      '<div><input type="number" id="gt_' + i + '" value="0" min="0" oninput="calc()" style="width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:5px;padding:6px 8px;color:var(--gold2);font-size:12px;font-family:\'DM Mono\',monospace;text-align:right;-moz-appearance:textfield"></div>' +
+      '<div><input type="number" id="gm_' + i + '" value="0" min="0" oninput="calc()" style="width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:5px;padding:6px 8px;color:var(--text);font-size:12px;font-family:\'DM Mono\',monospace;text-align:right;-moz-appearance:textfield"></div>' +
+      '<div id="gr_' + i + '" style="text-align:right;font-family:\'DM Mono\',monospace;font-size:12px;color:var(--text)">—</div>' +
+      '<div id="gf_' + i + '" style="text-align:center"></div>' +
+      '<div id="gg_' + i + '" style="text-align:right;font-family:\'DM Mono\',monospace;font-size:12px">—</div>';
+    tbody.appendChild(row);
+  }
+}
+
+const inputIds = [
+  'i_salary','i_side','i_rent','i_homeemi','i_groc','i_util','i_emi','i_trans','i_edu','i_ins',
+  'i_food','i_ott','i_shop','i_dine','i_oth','i_msav','i_sip','i_emf','i_80c','i_termcover',
+  'i_healthcover','i_ret','i_inf','i_hor','i_step','i_age','i_retage'
+];
+
+function makePayload(){
+  const payload = {};
+  inputIds.forEach(id => payload[id] = val(id));
+  payload.goals = [];
+  for(let i = 0; i < 5; i++){
+    payload.goals.push({
+      target: val('gt_' + i),
+      months: val('gm_' + i)
+    });
+  }
+  return payload;
+}
+
+function renderLeak(item){
+  const el = document.getElementById(item.id);
+  if(!el) return;
+  el.innerHTML =
+    '<div class="leak-header">' +
+      '<span class="leak-name">' + item.label + '</span>' +
+      '<span style="font-size:11px;color:' + item.status_color + ';font-weight:600">' + item.status_text + '</span>' +
+    '</div>' +
+    '<div class="leak-bar-wrap">' +
+      '<div class="leak-bar ' + (item.is_ok ? 'ok' : 'over') + '" style="width:' + item.bar_pct.toFixed(1) + '%"></div>' +
+    '</div>';
+}
+
+function applyResult(data){
+  Object.entries(data.values || {}).forEach(([id, value]) => set(id, value));
+  Object.entries(data.classes || {}).forEach(([id, value]) => setClass(id, value));
+
+  Object.entries(data.styles || {}).forEach(([id, styles]) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    Object.entries(styles).forEach(([key, value]) => el.style[key] = value);
+  });
+
+  const snapSurplus = document.getElementById('snap_surplus');
+  if(snapSurplus) snapSurplus.textContent = data.snap_surplus;
+
+  const arc = document.getElementById('score-arc');
+  if(arc) arc.style.strokeDashoffset = data.score_arc_offset;
+
+  const snapBanner = document.getElementById('snap_banner');
+  if(snapBanner) snapBanner.innerHTML = '<div class="' + data.budget.class + '">' + data.budget.text + '</div>';
+
+  ['a_budgbanner','dash_banner'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el){
+      el.textContent = data.budget.text;
+      el.className = data.budget.class;
+    }
+  });
+
+  (data.leaks || []).forEach(renderLeak);
+
+  (data.goals || []).forEach((goal, i) => {
+    set('gr_' + i, goal.required);
+    const feasibility = document.getElementById('gf_' + i);
+    if(feasibility){
+      feasibility.innerHTML = goal.class ? '<span class="' + goal.class + '">' + goal.feasibility + '</span>' : goal.feasibility;
+    }
+    set('gg_' + i, goal.gap_html);
+  });
+
+  const goalBanner = document.getElementById('goal_deficit_banner');
+  if(goalBanner){
+    goalBanner.style.display = data.goal_banner.display;
+    goalBanner.textContent = data.goal_banner.text;
+    goalBanner.className = data.goal_banner.class;
+  }
+
+  const inflBody = document.getElementById('infl-tbody');
+  if(inflBody){
+    inflBody.innerHTML = '';
+    (data.inflation_rows || []).forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + row.year + '</td>' +
+        '<td>' + row.today + '</td>' +
+        '<td>' + row.real + '</td>' +
+        '<td style="color:var(--red)">' + row.lost + '</td>' +
+        '<td style="color:' + row.pct_color + '">' + row.pct + '</td>' +
+        '<td>' + row.equivalent + '</td>';
+      inflBody.appendChild(tr);
+    });
+  }
+
+  const msTable = document.getElementById('ms-table');
+  if(msTable){
+    msTable.innerHTML = '';
+    (data.milestones || []).forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + row.label + '</td><td>' + row.months + '</td><td>' + row.years + '</td>';
+      msTable.appendChild(tr);
+    });
+  }
+}
+
+let calcTimer = null;
+function calc(){
+  clearTimeout(calcTimer);
+  calcTimer = setTimeout(runCalculation, 180);
+}
+
+async function runCalculation(){
+  try{
+    const response = await fetch(API_URL + '/calculate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(makePayload())
+    });
+
+    if(!response.ok) throw new Error('Backend returned ' + response.status);
+    const data = await response.json();
+    applyResult(data);
+  }catch(error){
+    console.error('FINTECH-X backend error:', error);
+    const snapBanner = document.getElementById('snap_banner');
+    if(snapBanner){
+      snapBanner.innerHTML = '<div class="budget-banner bad">Backend is not connected. Start the backend or update API_URL in frontend.js.</div>';
+    }
+  }
+}
+
+buildGoalRows();
+runCalculation();
+
+</script>
+</body>
+</html>
